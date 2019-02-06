@@ -68,7 +68,7 @@
         
 
     <div class="container">
-                <form>
+                <form action="" enctype="multipart/form-data" method="POST">
 
                     <fieldset>
                         <legend>Add a Hobby</legend>
@@ -84,7 +84,6 @@
                     </fieldset>
                     <?php 
                         if (isset($_POST['submit'])) {
-                            echo '<alert class="alert alert-success">Book Added</alert>';
 
                             $hobbyTitle = mysqli_real_escape_string($conn, $_POST['hobbyTitle']);
                             $hobbyDetails = mysqli_real_escape_string($conn, $_POST['hobbyDetails']);
@@ -93,7 +92,7 @@
                             mysqli_query($conn, $sql);
 
                             echo '<div class="alert alert-success alert-dismissible fade show">
-                                Book Added
+                                Hobby Added
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                                 </button>
@@ -105,21 +104,39 @@
          <hr>   
         <h2>My Hobbies</h2>
         <div class="row" style="margin: inherit; padding: inherit;">
+        <?php
+        
+        include_once 'config.php';
+
+        $sqlGetHobbies = "SELECT title, details FROM hobbies WHERE user_id = '$user_id'";
+        $result1 = mysqli_query($conn, $sqlGetHobbies);
+
+        if(mysqli_num_rows ($result1) > 0) {
+            while($row = mysqli_fetch_assoc($result1)) {
+        ?>
+
             <div class="card col-md-sm" style="width: 16rem">
+                <div class="card-body">
+                    <h5 class="card-title"><?php echo $row['title']; ?></h5>
+                    <p class="card-text"><?php echo $row['details']; ?><p>
+                    <button type="submit" name="remove" class="btn btn-danger">Remove</button>
+                </div>
+            </div>
+            <p> . . </p>
+        <?php
+            }
+        } else {
+            echo '<div class="alert alert-warning">No Hobby added</div>';
+        }
+        
+        ?>
+            <!-- <div class="card col-md-sm" style="width: 16rem">
                 <div class="card-body">
                     <h5 class="card-title">Reading</h5>
                     <p class="card-text">Non-fiction all the way. But fiction's still cool though<p>
                     <button type="submit" class="btn btn-danger">Remove</button>
                 </div>
-            </div>
-            <p> .. </p>
-            <div class="card col-md-sm" style="width: 16rem">
-                <div class="card-body">
-                    <h5 class="card-title">Reading</h5>
-                    <p class="card-text">Non-fiction all the way. But fiction's still cool though<p>
-                    <button type="submit" class="btn btn-danger">Remove</button>
-                </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
