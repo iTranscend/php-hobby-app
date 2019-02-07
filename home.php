@@ -54,16 +54,7 @@
                         </ul>
                     </form>
                 </div>
-                <!-- <form class="form-inline">
-                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                                <li class="nav-item">
-                                    <a class="nav-link"><?php echo $name; ?></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="logout.php">Logout</a>
-                                </li>
-                        </ul>
-                    </form> -->
+                
         </nav>
         
 
@@ -80,7 +71,7 @@
                             <label for="details">Details:</label>
                             <textarea class="form-control" id="details" rows="3" name="hobbyDetails"  placeholder="Every Tuesday and Friday..." ></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary" name="submit">Add</button>
+                        <button type="submit" class="btn btn-primary" name="submit" >Add</button>
                     </fieldset>
                     <?php 
                         if (isset($_POST['submit'])) {
@@ -98,17 +89,65 @@
                                 </button>
                             </div>';
 
+                            // Script to send the user a success email
+                            $to = $email;
+                            $subject = 'New Hobby Added';
+                            $message = '<html>
+                                        <head>
+                                        <title>New hobby Added</title>
+                                        </head>
+                                        <body>
+                                        <p>You just added a new Hobby</p>
+                                        </body>
+                                        </html>';
+                            $headers = 'MIME-Version: 1.0';
+                            $headers = 'Content-type: text/html; charset=iso-8859-1';
+
+                            mail($to, $subject, $message, $headers);
+
                         }
                     ?>
                 </form>
          <hr>   
         <h2>My Hobbies</h2>
+        <?php 
+        // Delete hobby block
+            include 'config.php';
+
+            if(isset($_GET['deletehobby'])) {
+                $deleteHobbyId = $_GET['delid'];
+
+                $sqlDeleteHobbies = "DELETE FROM hobbies WHERE hobby_id = '$deleteHobbyId'";
+                mysqli_query($conn, $sqlDeleteHobbies);
+
+                // Script to send the user an email
+                $to = $email;
+                $subject = 'Hobby Deleted';
+                $message = '<html>
+                            <head>
+                            <title>Hobby Deleted</title>
+                            </head>
+                            <body>
+                            <p>You just deleted a Hobby</p>
+                            </body>
+                            </html>';
+                $headers = 'MIME-Version: 1.0';
+                $headers = 'Content-type: text/html; charset=iso-8859-1';
+
+                mail($to, $subject, $message, $headers);
+
+                header("Location: home.php");
+                exit();
+            }
+        ?>
+
         <div class="row" style="margin: inherit; padding: inherit;">
+
         <?php
-        
+        // Add hobby block
         include_once 'config.php';
 
-        $sqlGetHobbies = "SELECT title, details FROM hobbies WHERE user_id = '$user_id'";
+        $sqlGetHobbies = "SELECT hobby_id, title, details FROM hobbies WHERE user_id = '$user_id'";
         $result1 = mysqli_query($conn, $sqlGetHobbies);
 
         if(mysqli_num_rows ($result1) > 0) {
@@ -119,7 +158,10 @@
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $row['title']; ?></h5>
                     <p class="card-text"><?php echo $row['details']; ?><p>
-                    <button type="submit" name="remove" class="btn btn-danger">Remove</button>
+                    <form action="single.php" method="POST">
+                        <a class="btn btn-danger" name="remove" onclick="return confirm('Are you sure you want to delete this hobby?')" style="color: white;" href="home.php?delid=<?php echo $row['hobby_id']; ?>&deletehobby=<?php echo 'deleteHobby'; ?>" >Remove</a>
+                    </form>
+                    <!-- <button type="submit" name="remove" class="btn btn-danger">Remove</button> -->
                 </div>
             </div>
             <p> . . </p>
@@ -130,13 +172,7 @@
         }
         
         ?>
-            <!-- <div class="card col-md-sm" style="width: 16rem">
-                <div class="card-body">
-                    <h5 class="card-title">Reading</h5>
-                    <p class="card-text">Non-fiction all the way. But fiction's still cool though<p>
-                    <button type="submit" class="btn btn-danger">Remove</button>
-                </div>
-            </div> -->
+        
         </div>
     </div>
 
