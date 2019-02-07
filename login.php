@@ -53,22 +53,33 @@
             if(isset($_POST['submit'])) {
                 include_once 'config.php';
 
+                // Collecting the user's details
                 $email = mysqli_real_escape_string($conn, $_POST['email']);
                 $passKey = mysqli_real_escape_string($conn, $_POST['password']);
 
+
                 if (!empty($email) && !empty($passKey)) {
-                    $sql = "SELECT * FROM users WHERE email = '$email' AND password = '$passKey'";
+                    
+                    $sql = "SELECT email, password FROM users WHERE email = '$email'";
                     $result = mysqli_query($conn, $sql);
+
+                    // Check the number of results(i.e. rows) returned
                     $resultCheck = mysqli_num_rows($result);
-                    if ($resultCheck < 1) {
+
+                    // Fetch and check the user's password to see if it matches the supplied passkey
+                    $row = mysqli_fetch_assoc($result);
+                    $hashedPassKey = $row['password'];
+                    $truth = password_verify($passKey, $hashedPassKey);  // boolean
+
+                    if ($resultCheck < 1 || $truth != 1) {
                         echo '<div class="alert alert-danger alert-dismissible fade show">
-                                Incorrect Email or Password
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>';
+                        Incorrect Email or Password
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>';
                     } else {
-                        if ($resultCheck = 1) {
+                        if ($resultCheck = 1 && $truth == 1) {
                             session_start();
                             $_SESSION['email'] = $email;
                             header("Location: ../phphobby/home.php");
