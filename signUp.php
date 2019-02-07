@@ -58,8 +58,9 @@
             $email = mysqli_real_escape_string($conn, $_POST['email']);
             $phone = mysqli_real_escape_string($conn, $_POST['phone']);
             $passKey = mysqli_real_escape_string($conn, $_POST['passkey']);
+            $hashedPassKey = password_hash($passKey, PASSWORD_ARGON2I);
 
-            if ( empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($passKey)) {
+            if ( empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($hashedPassKey)) {
                 echo '<div class="alert alert-danger">Please fill in all fields</div>';
             } else {
                 $sql2 = "SELECT * FROM users WHERE email = '$email'";
@@ -69,7 +70,7 @@
                 if ($checkResult > 0) {
                     echo '<div class="alert alert-danger">This email is already in use.</div>';
                 } else {
-                    $sql = "INSERT INTO users (first_name, last_name, email, phone, password) values ('$firstName', '$lastName', '$email', '$phone', '$passKey')";
+                    $sql = "INSERT INTO users (first_name, last_name, email, phone, password) values ('$firstName', '$lastName', '$email', '$phone', '$hashedPassKey')";
                     $query = mysqli_query($conn, $sql);
                     echo '<div class="alert alert-success">Your sign up was successful. please proceed to <a href="login.php">login</div>';
                 }
