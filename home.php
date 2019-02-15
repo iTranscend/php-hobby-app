@@ -158,7 +158,7 @@
                 <div class="card-body">
                     <h5 class="card-title"><?php echo $row['title']; ?></h5>
                     <p class="card-text"><?php echo $row['details']; ?><p>
-                    <form action="single.php" method="POST">
+                    <form action="" method="POST">
                         <a class="btn btn-danger" name="remove" onclick="return confirm('Are you sure you want to delete this hobby?')" style="color: white;" href="home.php?delid=<?php echo $row['hobby_id']; ?>&deletehobby=<?php echo 'deleteHobby'; ?>" >Remove</a>
                     </form>
                 </div>
